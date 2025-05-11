@@ -131,6 +131,7 @@ Send a JSON object with the following structure:
 ```
 
 #### **Field Requirements**
+
 - `email` (string, required): Must be a valid email address.
 - `password` (string, required): Must match the password used during registration.
 
@@ -139,6 +140,7 @@ Send a JSON object with the following structure:
 ### **Responses**
 
 #### **200 OK**
+
 - **Description:** User authenticated successfully.
 - **Body:**
   ```json
@@ -157,6 +159,7 @@ Send a JSON object with the following structure:
   ```
 
 #### **401 Unauthorized**
+
 - **Description:** Invalid email or password.
 - **Body:**
   ```json
@@ -166,6 +169,7 @@ Send a JSON object with the following structure:
   ```
 
 #### **422 Unprocessable Entity**
+
 - **Description:** Validation failed (e.g., missing fields, invalid email).
 - **Body:**
   ```json
@@ -181,6 +185,7 @@ Send a JSON object with the following structure:
   ```
 
 #### **500 Internal Server Error**
+
 - **Description:** Server error or database failure.
 - **Body:**
   ```json
@@ -205,6 +210,7 @@ curl -X POST http://localhost:3000/users/login \
 ---
 
 ### **Notes**
+
 - Both `email` and `password` are required fields.
 - The returned token can be used for authenticated requests.
 - Ensure the email and password match the credentials used during registration.
@@ -234,6 +240,7 @@ This endpoint retrieves the profile information of the logged-in user. The reque
 ### **Responses**
 
 #### **200 OK**
+
 - **Description:** User profile retrieved successfully.
 - **Body:**
   ```json
@@ -251,6 +258,7 @@ This endpoint retrieves the profile information of the logged-in user. The reque
   ```
 
 #### **401 Unauthorized**
+
 - **Description:** Token is missing, invalid, or blacklisted.
 - **Body:**
   ```json
@@ -260,6 +268,7 @@ This endpoint retrieves the profile information of the logged-in user. The reque
   ```
 
 #### **500 Internal Server Error**
+
 - **Description:** Server error or database failure.
 - **Body:**
   ```json
@@ -280,6 +289,7 @@ curl -X GET http://localhost:3000/users/profile \
 ---
 
 ### **Notes**
+
 - A valid JWT token is required to access this endpoint.
 - The token must not be blacklisted.
 
@@ -306,6 +316,7 @@ This endpoint logs out the user by clearing the authentication token from cookie
 ### **Responses**
 
 #### **200 OK**
+
 - **Description:** User logged out successfully.
 - **Body:**
   ```json
@@ -315,6 +326,7 @@ This endpoint logs out the user by clearing the authentication token from cookie
   ```
 
 #### **401 Unauthorized**
+
 - **Description:** Token is missing, invalid, or blacklisted.
 - **Body:**
   ```json
@@ -324,6 +336,7 @@ This endpoint logs out the user by clearing the authentication token from cookie
   ```
 
 #### **500 Internal Server Error**
+
 - **Description:** Server error or database failure.
 - **Body:**
   ```json
@@ -344,8 +357,149 @@ curl -X GET http://localhost:3000/users/logout \
 ---
 
 ### **Notes**
+
 - A valid JWT token is required to log out.
 - The token is blacklisted and cannot be reused after logout.
 - If using cookies, the token is cleared automatically.
 
+---
 
+# Captain Registration API Documentation
+
+## POST `/captains/register`
+
+Registers a new captain in the system.
+
+---
+
+### **Description**
+
+This endpoint allows a new captain to register by providing their first name, last name, email, password, and vehicle details. The password is securely hashed before being stored in the database. On successful registration, a JWT authentication token and the captain object are returned.
+
+---
+
+### **Request Body**
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "password": "yourpassword",
+  "vechicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vechicleType": "car"
+  }
+}
+```
+
+#### **Field Requirements**
+
+- `fullname.firstname` (string, required): Minimum 3 characters.
+- `fullname.lastname` (string, optional): Minimum 3 characters if provided.
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+- `vechicle.color` (string, required): Minimum 3 characters.
+- `vechicle.plate` (string, required): Minimum 3 characters.
+- `vechicle.capacity` (number, required): Must be a positive integer.
+- `vechicle.vechicleType` (string, required): Must be one of `car`, `motorcycle`, or `auto`.
+
+---
+
+### **Responses**
+
+#### **201 Created**
+
+- **Description:** Captain registered successfully.
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "captain": {
+      "_id": "captain_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vechicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vechicleType": "car"
+      },
+      "status": "inactive",
+      "socketId": null
+    }
+  }
+  ```
+
+#### **409 Conflict**
+
+- **Description:** Captain with the provided email already exists.
+- **Body:**
+  ```json
+  {
+    "message": "Captain already exists"
+  }
+  ```
+
+#### **422 Unprocessable Entity**
+
+- **Description:** Validation failed (e.g., missing fields, invalid email, short password).
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Error message",
+        "param": "field",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+#### **500 Internal Server Error**
+
+- **Description:** Server error or database failure.
+- **Body:**
+  ```json
+  {
+    "error": "Internal server error"
+  }
+  ```
+
+---
+
+### **Example Request**
+
+```bash
+curl -X POST http://localhost:3000/captains/register \
+-H "Content-Type: application/json" \
+-d '{
+  "fullname": { "firstname": "Alice", "lastname": "Smith" },
+  "email": "alice@example.com",
+  "password": "securepassword",
+  "vechicle": {
+    "color": "Blue",
+    "plate": "XYZ789",
+    "capacity": 2,
+    "vechicleType": "motorcycle"
+  }
+}'
+```
+
+---
+
+### **Notes**
+
+- All required fields must be provided in the request body.
+- The password is never returned in the response.
+- The returned token can be used for authenticated requests.
