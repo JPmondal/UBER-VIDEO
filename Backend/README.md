@@ -209,4 +209,143 @@ curl -X POST http://localhost:3000/users/login \
 - The returned token can be used for authenticated requests.
 - Ensure the email and password match the credentials used during registration.
 
+---
+
+# User Profile & Logout API Documentation
+
+## GET `/users/profile`
+
+Fetches the profile of the currently authenticated user.
+
+---
+
+### **Description**
+
+This endpoint retrieves the profile information of the logged-in user. The request must include a valid JWT token in the `Authorization` header or as a cookie.
+
+---
+
+### **Headers**
+
+- `Authorization` (string, optional): Bearer token for authentication (if not using cookies).
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** User profile retrieved successfully.
+- **Body:**
+  ```json
+  {
+    "user": {
+      "_id": "user_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "socketId": null
+    }
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Token is missing, invalid, or blacklisted.
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+#### **500 Internal Server Error**
+- **Description:** Server error or database failure.
+- **Body:**
+  ```json
+  {
+    "error": "Internal server error"
+  }
+  ```
+
+---
+
+### **Example Request**
+
+```bash
+curl -X GET http://localhost:3000/users/profile \
+-H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+### **Notes**
+- A valid JWT token is required to access this endpoint.
+- The token must not be blacklisted.
+
+---
+
+## GET `/users/logout`
+
+Logs out the currently authenticated user by blacklisting their JWT token.
+
+---
+
+### **Description**
+
+This endpoint logs out the user by clearing the authentication token from cookies and blacklisting it in the database. Once logged out, the token cannot be used again.
+
+---
+
+### **Headers**
+
+- `Authorization` (string, optional): Bearer token for authentication (if not using cookies).
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** User logged out successfully.
+- **Body:**
+  ```json
+  {
+    "message": "Logged out successfully"
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Token is missing, invalid, or blacklisted.
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+#### **500 Internal Server Error**
+- **Description:** Server error or database failure.
+- **Body:**
+  ```json
+  {
+    "error": "Internal server error"
+  }
+  ```
+
+---
+
+### **Example Request**
+
+```bash
+curl -X GET http://localhost:3000/users/logout \
+-H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+### **Notes**
+- A valid JWT token is required to log out.
+- The token is blacklisted and cannot be reused after logout.
+- If using cookies, the token is cleared automatically.
+
 
