@@ -1,4 +1,4 @@
-# User Registration API Documentation
+# User Registration & Authentication API Documentation
 
 ## POST `/users/register`
 
@@ -104,3 +104,109 @@ curl -X POST http://localhost:3000/users/register \
 - All required fields must be provided in the request body.
 - The password is never returned in the response.
 - The returned token can be used for authenticated requests.
+
+---
+
+## POST `/users/login`
+
+Authenticates a user and returns a JWT token upon successful login.
+
+---
+
+### **Description**
+
+This endpoint allows an existing user to log in by providing their email and password. If the credentials are valid, a JWT authentication token and the user object are returned.
+
+---
+
+### **Request Body**
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "yourpassword"
+}
+```
+
+#### **Field Requirements**
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Must match the password used during registration.
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** User authenticated successfully.
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "user": {
+      "_id": "user_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "socketId": null
+    }
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Invalid email or password.
+- **Body:**
+  ```json
+  {
+    "message": "Invalid email or password"
+  }
+  ```
+
+#### **422 Unprocessable Entity**
+- **Description:** Validation failed (e.g., missing fields, invalid email).
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Error message",
+        "param": "field",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+#### **500 Internal Server Error**
+- **Description:** Server error or database failure.
+- **Body:**
+  ```json
+  {
+    "error": "Internal server error"
+  }
+  ```
+
+---
+
+### **Example Request**
+
+```bash
+curl -X POST http://localhost:3000/users/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "john.doe@example.com",
+  "password": "yourpassword"
+}'
+```
+
+---
+
+### **Notes**
+- Both `email` and `password` are required fields.
+- The returned token can be used for authenticated requests.
+- Ensure the email and password match the credentials used during registration.
+
+
