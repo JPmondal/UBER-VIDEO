@@ -503,3 +503,157 @@ curl -X POST http://localhost:3000/captains/register \
 - All required fields must be provided in the request body.
 - The password is never returned in the response.
 - The returned token can be used for authenticated requests.
+
+---
+
+# Captain Profile & Logout API Documentation
+
+## GET `/captains/profile`
+
+Fetches the profile of the currently authenticated captain.
+
+---
+
+### **Description**
+
+This endpoint retrieves the profile information of the logged-in captain. The request must include a valid JWT token in the `Authorization` header or as a cookie.
+
+---
+
+### **Headers**
+
+- `Authorization` (string, optional): Bearer token for authentication (if not using cookies).
+
+---
+
+### **Responses**
+
+#### **200 OK**
+
+- **Description:** Captain profile retrieved successfully.
+- **Body:**
+  ```json
+  {
+    "captain": {
+      "_id": "captain_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vechicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vechicleType": "car"
+      },
+      "status": "inactive",
+      "socketId": null
+    }
+  }
+  ```
+
+#### **401 Unauthorized**
+
+- **Description:** Token is missing, invalid, or blacklisted.
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+#### **500 Internal Server Error**
+
+- **Description:** Server error or database failure.
+- **Body:**
+  ```json
+  {
+    "error": "Internal server error"
+  }
+  ```
+
+---
+
+### **Example Request**
+
+```bash
+curl -X GET http://localhost:3000/captains/profile \
+-H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+### **Notes**
+
+- A valid JWT token is required to access this endpoint.
+- The token must not be blacklisted.
+
+---
+
+## GET `/captains/logout`
+
+Logs out the currently authenticated captain by blacklisting their JWT token.
+
+---
+
+### **Description**
+
+This endpoint logs out the captain by clearing the authentication token from cookies and blacklisting it in the database. Once logged out, the token cannot be used again.
+
+---
+
+### **Headers**
+
+- `Authorization` (string, optional): Bearer token for authentication (if not using cookies).
+
+---
+
+### **Responses**
+
+#### **200 OK**
+
+- **Description:** Captain logged out successfully.
+- **Body:**
+  ```json
+  {
+    "message": "Logged out successfully"
+  }
+  ```
+
+#### **401 Unauthorized**
+
+- **Description:** Token is missing, invalid, or blacklisted.
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+#### **500 Internal Server Error**
+
+- **Description:** Server error or database failure.
+- **Body:**
+  ```json
+  {
+    "error": "Internal server error"
+  }
+  ```
+
+---
+
+### **Example Request**
+
+```bash
+curl -X GET http://localhost:3000/captains/logout \
+-H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+### **Notes**
+
+- A valid JWT token is required to log out.
+- The token is blacklisted and cannot be reused after logout.
+- If using cookies, the token is cleared automatically.
