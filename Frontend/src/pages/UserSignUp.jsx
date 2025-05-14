@@ -10,9 +10,9 @@ const UserSignUp = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserdata] = useState({});
-
   const navigate = useNavigate();
+
+  const { user, setUser } = useContext(UserDataContext);
 
   // Function to handle form submission
   const onSubmitHandler = async (e) => {
@@ -26,7 +26,16 @@ const UserSignUp = () => {
       password: password,
     };
 
-    const response = await axios.post(`${base_url}/users/signup`, newUser);
+    const response = await axios.post(`${base_url}/users/register`, newUser);
+
+    console.log(response);
+
+    if (response.status === 201) {
+      const data = response.data;
+      setUser(data.user);
+      localStorage.setItem("token", data.token);
+      navigate("/home");
+    }
 
     // Clear input fields after submission
     setEmail("");
@@ -34,10 +43,6 @@ const UserSignUp = () => {
     setFirstName("");
     setLastName("");
   };
-
-  useEffect(() => {
-    console.log(userData);
-  }, [userData]);
 
   return (
     <div className="p-6 flex flex-col justify-between h-screen">

@@ -1,6 +1,8 @@
-import React from 'react'
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import React, { useContext } from "react";
+import { useState } from "react";
+import { Link,useNavigate } from "react-router-dom";
+import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainSignUp = () => {
   // State variables to store firstname, lastname, email, password, and user data
@@ -8,45 +10,73 @@ const CaptainSignUp = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserdata] = useState({});
+
+  const [vechicleColor, setVechicleColor] = useState("");
+  const [vechiclePlate, setVechiclePlate] = useState("");
+  const [vechicleCapacity, setVechicleCapacity] = useState(1);
+  const [vechicleType, setVechicleType] = useState("car");
+
+
+    const navigate = useNavigate();
+
+
+  const { captain, setCaptain } = useContext(CaptainDataContext);
 
   // Function to handle form submission
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
     // Update userData state with email and password
-    setUserdata({
-      fullname:{
-        firstname : firstName,
-        lastname : lastName
+    const captainData = {
+      fullname: {
+        firstname: firstName,
+        lastname: lastName,
       },
       email: email,
       password: password,
-    });
+      vechicle: {
+        color: vechicleColor,
+        plate: vechiclePlate,
+        capacity: vechicleCapacity,
+        vechicleType: vechicleType,
+      },
+    };
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/captains/register`,
+      captainData
+    );
+    console.log(response);
+
+    if (response.status === 201) {
+      const data = response.data;
+      setCaptain(data.captain);
+      localStorage.setItem("token", data.token);
+      navigate("/captain-home");
+    }
 
     // Clear input fields after submission
     setEmail("");
     setPassword("");
     setFirstName("");
     setLastName("");
+    setVechicleColor("");
+    setVechiclePlate("");
+    setVechicleCapacity("");
+    setVechicleType("");
   };
 
-  useEffect(() => {
-    console.log(userData); // Log user data to the console
-  }, [userData]);
-
-  
   return (
-    <div className="p-6 flex flex-col justify-between h-screen">
+    <div className="p-6 flex flex-col">
       <div>
         {/* Uber logo */}
         <img
-          className="w-20"
+          className="w-16"
           src="https://pngimg.com/d/uber_PNG24.png"
           alt=""
         />
         {/* Login form */}
-        <form onSubmit={(e) => onSubmitHandler(e)} className="mt-6">
+        <form onSubmit={(e) => onSubmitHandler(e)} className="mt-2">
           {/* Name input field */}
           <div className="mt-2">
             <p className="font-medium text-md">What's your Name</p>
@@ -90,6 +120,56 @@ const CaptainSignUp = () => {
               placeholder="password"
             />
           </div>
+          <div className="flex gap-2">
+            {/* Vechicle color input field */}
+            <div className="mt-2">
+              <p className="font-medium text-md">Vechicle color</p>
+              <input
+                onChange={(e) => setVechicleColor(e.target.value)} // Update vechicleColor state on input change
+                value={vechicleColor} // Bind input value to vechicleColor state
+                className="bg-gray-200 w-full p-3 rounded mt-2 placeholder-gray-500"
+                type="text"
+                placeholder="vechicle color"
+              />
+            </div>
+            {/* Vechicle capacity input field */}
+            <div className="mt-2">
+              <p className="font-medium text-md">Vechicle capacity</p>
+              <input
+                onChange={(e) => setVechicleCapacity(e.target.value)} // Update vechicleCapacity state on input change
+                value={vechicleCapacity} // Bind input value to vechicleCapacity state
+                className="bg-gray-200 w-full p-3 rounded mt-2 placeholder-gray-500"
+                type="number"
+                placeholder="vechicle capacity"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {/* Vechicle plate input field */}
+            <div className="mt-2">
+              <p className="font-medium text-md">Vechicle plate</p>
+              <input
+                onChange={(e) => setVechiclePlate(e.target.value)} // Update vechiclePlate state on input change
+                value={vechiclePlate} // Bind input value to vechiclePlate state
+                className="bg-gray-200 w-full p-3 rounded mt-2 placeholder-gray-500"
+                type="text"
+                placeholder="vechicle plate"
+              />
+            </div>
+            {/* Vechicle type input field */}
+            <div className="mt-2">
+              <p className="font-medium text-md">Vechicle type</p>
+              <select
+                onChange={(e) => setVechicleType(e.target.value)} // Update vechicleType state on input change
+                value={vechicleType} // Bind input value to vechicleType state
+                className="bg-gray-200 w-full p-3 rounded mt-2 placeholder-gray-500"
+              >
+                <option value="car">car</option>
+                <option value="motorcycle">motorcycle</option>
+                <option value="auto">auto</option>
+              </select>
+            </div>
+          </div>
           {/* Submit button */}
           <button
             type="submit"
@@ -107,18 +187,13 @@ const CaptainSignUp = () => {
         </form>
       </div>
       {/* Terms and Policy */}
-      <p className="text-xs leading-tight text-justify mt-4">
+      <p className="text-xs leading-tight text-justify mt-2">
         By signing up, you agree to our{" "}
-        <Link className="text-blue-600">
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link  className="text-blue-600">
-          Privacy Policy
-        </Link>.
+        <Link className="text-blue-600">Terms of Service</Link> and{" "}
+        <Link className="text-blue-600">Privacy Policy</Link>.
       </p>
     </div>
   );
-}
+};
 
-export default CaptainSignUp
+export default CaptainSignUp;
