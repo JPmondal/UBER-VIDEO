@@ -68,19 +68,19 @@ module.exports.getCaptainProfile = async (req, res) => {
 
 // Logout captain
 module.exports.logoutCaptain = async (req, res) => {
-    try {
-        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
-        if (!token) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        await BlacklistTokenModel.create({ token });
-
-        res.clearCookie("token");
-        res.status(200).json({ message: "Logged out successfully" });
-    } catch (error) {
-        console.error("Error during logout:", error);
-        res.status(500).json({ message: "Internal server error" });
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
+
+    await BlacklistTokenModel.create({ token });
+
+    res.clearCookie("token");
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

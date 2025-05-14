@@ -1,13 +1,15 @@
 import React, { createContext } from "react";
 
-export const UserDataContext = createContext( );
+export const UserDataContext = createContext();
 
-const UserContext = ({ children }) => {
+const UserDataProvider = ({ children }) => {
   return (
     <div>
-      <UserDataContext.Provider>{children}</UserDataContext.Provider>
+      <UserDataContext.Provider value={value}>
+        {children}
+      </UserDataContext.Provider>
     </div>
   );
 };
 
-export default UserContext;
+export default UserDataProvider;
