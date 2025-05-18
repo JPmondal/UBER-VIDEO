@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useContext } from "react";
 import { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainSignUp = () => {
@@ -16,9 +16,7 @@ const CaptainSignUp = () => {
   const [vechicleCapacity, setVechicleCapacity] = useState(1);
   const [vechicleType, setVechicleType] = useState("car");
 
-
-    const navigate = useNavigate();
-
+  const navigate = useNavigate();
 
   const { captain, setCaptain } = useContext(CaptainDataContext);
 

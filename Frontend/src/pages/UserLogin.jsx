@@ -1,38 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useContext } from "react";
 import { UserDataContext } from "../context/UserContext";
 
 const UserLogin = () => {
-  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate()
-  const {user,setUser} = useContext(UserDataContext);
-  const base_url = import.meta.env.VITE_BASE_URL
+  const navigate = useNavigate();
+  const { user, setUser } = useContext(UserDataContext);
+  const base_url = import.meta.env.VITE_BASE_URL;
 
   // Function to handle form submission
   const onSubmitHandler = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
-    const userData  = {
-      email : email,
-      password : password
-    }
+    const userData = {
+      email: email,
+      password: password,
+    };
 
     //calling backend
     const response = await axios.post(`${base_url}/users/login`, userData);
 
-
     console.log(response);
-    if(response.status === 200){
+    if (response.status === 200) {
       const data = response.data;
       setUser(data.user);
-      localStorage.setItem("token",data.token);
+      localStorage.setItem("token", data.token);
       navigate("/home");
     }
-
 
     // Clear input fields after submission
     setEmail("");
@@ -40,8 +37,8 @@ const UserLogin = () => {
   };
 
   useEffect(() => {
-      console.log(user); 
-  },[user])
+    console.log(user);
+  }, [user]);
 
   return (
     <div className="p-6 flex flex-col justify-between h-screen">

@@ -6,7 +6,6 @@ export const CaptainDataContext = createContext();
 // Create a provider component
 const CaptainDataProvider = ({ children }) => {
   const [captain, setCaptain] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const updateCaptain = (captainData) => {
@@ -16,8 +15,6 @@ const CaptainDataProvider = ({ children }) => {
   const value = {
     captain,
     setCaptain,
-    isLoading,
-    setIsLoading,
     error,
     setError,
     updateCaptain,

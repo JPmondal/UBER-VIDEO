@@ -1,33 +1,48 @@
-import React from 'react'
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import {  useState,useContext } from "react";
+import { Link , useNavigate} from "react-router-dom";
+import axios from "axios";
+import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainLogin = () => {
   // State variables to store email, password, and user data
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [captainData, setCaptainData] = useState({});
+
+  const {captain,setCaptain} = useContext(CaptainDataContext);
+  const navigate = useNavigate();
 
   // Function to handle form submission
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
     // Update userData state with email and password
-    setCaptainData({
+    const captainData = {
       email: email,
       password: password,
-    });
+    };
+
+    const response = await  axios.post(
+      `${import.meta.env.VITE_BASE_URL}/captains/login`,captainData)
+
+      console.log(response);
+
+      if(response.status === 200){
+        const data = response.data;
+        setCaptain(data.captain);
+      
+        localStorage.setItem("token", data.token);
+        navigate("/captain-home");
+      }
 
     // Clear input fields after submission
     setEmail("");
     setPassword("");
   };
 
-  useEffect(() => {
-      console.log(captainData); // Log user data to the console
-  },[captainData])
 
-   return (
+
+  return (
     <div className="p-6 flex flex-col justify-between h-screen">
       <div>
         {/* Uber logo */}
@@ -85,6 +100,6 @@ const CaptainLogin = () => {
       </Link>
     </div>
   );
-}
+};
 
-export default CaptainLogin
+export default CaptainLogin;
