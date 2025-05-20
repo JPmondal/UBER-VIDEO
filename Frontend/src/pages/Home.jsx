@@ -165,7 +165,7 @@ const Home = () => {
       <LookingForDriver setWaitingForDriverPanel={setWaitingForDriverPanel}/>
 
       </div>
-      <div ref={waitingForDriverPanelRef}  className="absolute bottom-0 z-10 translayfute-y-full w-full p-4 bg-white">
+      <div ref={waitingForDriverPanelRef}  className="absolute bottom-0 z-10  w-full p-4 bg-white">
 
       < WaitingForDriver />
 
